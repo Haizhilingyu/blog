@@ -14,6 +14,13 @@
 - 移动优先响应式布局
 - RSS 订阅（`/feed.xml`）
 
+## AI 资讯
+
+每日自动采集 AI 领域热门推文，生成静态 HTML 页面。
+- 资讯首页：`/ai-news.html`
+- 不加入博客 RSS
+- 由 VPS Hermes cron job 每天采集
+
 ## 目录结构
 
 ```
@@ -22,6 +29,11 @@
 ├── feed.xml            # RSS（自动生成）
 ├── about.html          # 关于页
 ├── publish.py          # 发布脚本
+├── ai-news/             # AI 资讯数据 + 页面
+│   ├── YYYY-MM-DD.json  # 每日数据快照
+│   └── YYYY-MM-DD.html  # 每日详情页
+├── news_generator.py    # 资讯 HTML 生成脚本
+├── save_news.py         # 采集桥接脚本
 └── posts/
     ├── manifest.json   # 文章索引（唯一数据源）
     ├── hello-world.html
