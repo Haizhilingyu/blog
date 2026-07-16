@@ -1,0 +1,15 @@
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 生成的文件（可选保留，这里保留以便直接部署）
+# index.html
+# feed.xml
+# page-*.html

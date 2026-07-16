@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用 AI Agent 搭建自动化开发流水线 · 海之领域</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg);z-index:100}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none;letter-spacing:.05em}
+.nav{display:flex;gap:24px}
+.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav a:hover{color:var(--c-accent)}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.85rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--c-border);color:var(--c-text-light)}
+.tag.tech{background:rgba(26,115,232,.12);color:#1a73e8}
+.tag.life{background:rgba(212,100,30,.12);color:#d4641e}
+.post-body{padding:48px 0}
+.post-body h1{font-size:1.75rem;margin-bottom:8px;line-height:1.4}
+.post-body h2{font-size:1.3rem;margin:36px 0 12px;line-height:1.4}
+.post-body h3{font-size:1.1rem;margin:28px 0 10px}
+.post-body p{margin-bottom:16px;color:var(--c-text-light)}
+.post-body ul,.post-body ol{padding-left:20px;margin-bottom:16px}
+.post-body li{margin-bottom:8px;color:var(--c-text-light)}
+.post-body blockquote{border-left:3px solid var(--c-accent);padding-left:16px;margin:24px 0;color:var(--c-text-light);font-style:italic}
+.post-body pre{background:var(--c-border);padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0;font-size:.9rem;line-height:1.5}
+.post-body code{font-family:"SF Mono","Fira Code",monospace;font-size:.9rem}
+.post-body strong{color:var(--c-text);font-weight:600}
+.post-body table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+.post-body th,.post-body td{border:1px solid var(--c-border);padding:8px 12px;text-align:left;color:var(--c-text-light)}
+.post-body th{background:var(--c-border);font-weight:600;color:var(--c-text)}
+.back-link{display:inline-block;margin-top:40px;color:var(--c-accent);text-decoration:none;font-size:.9rem}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center;margin-top:48px}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}
+.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/about.html">关于</a></nav>
+</div></header>
+<main class="container"><article class="post-body">
+
+<div class="post-meta">
+<span class="tag tech">技术</span>
+<time>2026-07-14</time>
+<span>· 约 12 分钟阅读</span>
+</div>
+
+<h1>用 AI Agent 搭建自动化开发流水线</h1>
+
+<p>半年前我开始折腾一件事：能不能用 AI Agent 把日常开发任务的流转过程全部自动化掉？不是写个 Copilot 帮你补全代码那种，而是从需求分析、任务拆分、开发、部署到测试验证，整条链路让 Agent 自己跑完，人只在关键节点做判断。</p>
+
+<p>这篇文章记录这套系统的架构设计、踩过的坑，以及——最重要的——为什么最终我选择了一个看起来「不那么 AI」的中心化调度方案。</p>
+
+<h2>整体架构</h2>
+
+<p>系统的代号叫 <strong>dev-env</strong>，搭建在 Hermes Agent（一个开源的 AI Agent 框架）之上。核心组件三个：</p>
+
+<ul>
+<li><strong>Portal（:8090）</strong>：统一入口，所有任务从这发起，走 LDAP 认证</li>
+<li><strong>管理中心</strong>：任务管理、状态查看、日志检索</li>
+<li><strong>Runner 集群</strong>：真正执行任务的 Worker，只干活不思考</li>
+</ul>
+
+<p>听起来像传统的任务调度平台，确实如此。但关键区别在于：<strong>任务的需求拆分、代码编写、质量判断，全部交给 AI Agent 完成</strong>，平台只负责流转和兜底。</p>
+
+<h2>状态机：一切的骨架</h2>
+
+<p>每个任务的生命周期被硬编码成一个有限状态机：</p>
+
+<pre><code>init → requirement → developing → deploying → testing → done</code></pre>
+
+<p>状态的流转规则写在代码里，不可被 Agent 修改。比如 <code>developing</code> 状态结束后，<strong>必须</strong>进入 <code>deploying</code>，不能跳到 <code>done</code>，也不能回退。每个状态有明确的入口条件和退出条件，全部代码校验。</p>
+
+<p>为什么要这么死板？下面会说。</p>
+
+<h2>中心调度器：30 秒的心跳</h2>
+
+<p>系统里有一个 <code>scheduler.js</code>，每 30 秒轮询一次所有处于活跃状态的任务，检查它们的当前状态，决定是否推进到下一步。Runner 集群本身不做决策——它们只是调度器的手和脚。</p>
+
+<p>这个设计有一个核心逻辑：PM Agent（负责需求分析）输出的不是一段自然语言描述，而是一个结构化的 <code>task-plan.json</code>：</p>
+
+<pre><code>{
+  "phases": [
+    { "name": "backend-api", "type": "develop", "desc": "..." },
+    { "name": "frontend", "type": "develop", "depends_on": ["backend-api"] },
+    { "name": "deploy-staging", "type": "deploy" },
+    { "name": "e2e-test", "type": "test" }
+  ]
+}</code></pre>
+
+<p>调度器读这个 JSON，按 <code>phases</code> 数组和依赖关系自动创建子任务并分发给 Runner。Agent 负责生成计划，代码负责执行计划。<strong>判断归 Agent，流转归代码。</strong></p>
+
+<h2>为什么不用「完全自主」的 Agent？</h2>
+
+<p>这是整个系统设计中被问得最多的问题。</p>
+
+<p>理论上，你可以给 Agent 一个大的 prompt：「你是一个全栈工程师，请完成以下需求，自主决策每一步」，然后让它自己规划、自己执行、自己验证。听起来更优雅，更「AI Native」。</p>
+
+<p>但实际跑下来会发现：<strong>Agent 不可靠</strong>。</p>
+
+<p>具体来说有这么几类问题：</p>
+
+<ol>
+<li><strong>状态漂移</strong>：Agent 跑着跑着忘了自己在哪一步，重复执行已完成的任务，或者跳过关键步骤</li>
+<li><strong>死循环</strong>：测试失败后 Agent 反复尝试同一种修复方式，不懂得换策略</li>
+<li><strong>静默失败</strong>：某一步报错了但 Agent 判断「问题不大」继续往下走，最后整条链路在错误基础上堆积</li>
+<li><strong>无法恢复</strong>：Agent 中途崩溃后没有上下文快照，只能从头再来</li>
+</ol>
+
+<p>这些问题的根源在于：<strong>LLM 的决策是概率性的</strong>。你让它做一次需求拆分，它做得很好；你让它连续做 20 次状态判断，只要有 1 次出错，整条流水线就可能跑偏。</p>
+
+<p>所以我最终的哲学是：</p>
+
+<blockquote><strong>流程门禁走代码，业务判断走 Agent。</strong> 关键的状态流转、依赖校验、失败重试逻辑，全部硬编码在调度器里，Agent 不能干预。Agent 只在「需要理解语义」的环节出场：读需求、写代码、判断测试结果是否合理。</blockquote>
+
+<p>这听起来不性感。很多 AI Agent 的演示视频都在强调「完全自主」，但你仔细看那些 demo，跑的都是单次任务、精心准备的场景。真正的生产环境，可靠性比智能更重要。</p>
+
+<h2>模型选择：从 GLM 到 ARK</h2>
+
+<p>系统上线时用的智谱 <strong>GLM-5.2</strong>，整体能力不错，但在长上下文推理和复杂 JSON 输出上偶尔会翻车。后来迁移到了火山引擎的 <strong>ARK Agent Plan</strong>，主要原因是对 Agent 场景做了专门优化，工具调用的稳定性明显更好。</p>
+
+<p>不过迁移过程也踩了两个坑：</p>
+
+<h3>坑一：QPM 限速</h3>
+
+<p>ARK 的辅助调用（auxiliary calls，比如嵌入向量、内容审核）和主调用<strong>共享同一个配额池</strong>。高峰期 Runner 一多，辅助调用会被限速，导致任务排队。解决方案是给辅助调用单独申请了一个低优先级的 endpoint，和主链路物理隔离。</p>
+
+<h3>坑二：端点配错导致欠费</h3>
+
+<p>ARK 后台每个模型对应一个 endpoint ID，配置时手滑把推理 endpoint 写成了训练 endpoint。训练按量计费且贵得多，一个下午烧掉了正常一周的预算。发现后第一时间在 ARK 后台设置了<strong>每日消费上限</strong>，这个一定要提前配好。</p>
+
+<h2>半年下来的反思</h2>
+
+<p>系统跑了大半年，处理了上千个任务。坦率说，它没有完全取代人工——复杂需求仍然需要人去拆解和验收。但在以下场景，它的确大幅降低了重复劳动：</p>
+
+<ul>
+<li>标准化的 CRUD 接口开发（填表式需求 → 自动出代码 → 自动部署 → 自动测）</li>
+<li>批量数据清洗和格式转换</li>
+<li>已有项目的 bug 修复（给出复现路径，Agent 自主定位并提 PR）</li>
+</ul>
+
+<p>如果让我重来一次，最大的决策不会变：<strong>用状态机和调度器约束 Agent，而不是放任 Agent 自主决策</strong>。这不是对 AI 不信任，而是对系统的可靠性负责。Agent 是引擎，代码是底盘和刹车——光有马力大是不够的，你得能在弯道上停得住。</p>
+
+<a href="/" class="back-link">← 返回文章列表</a>
+
+</article></main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域</p><p class="footer-sub">xiweihai.site</p>
+</div></footer>
+</body></html>

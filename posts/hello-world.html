@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你好，世界 · 海之领域</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px}body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg)}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none}
+.nav{display:flex;gap:24px}.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem}.nav a:hover{color:var(--c-accent)}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.85rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;background:rgba(26,115,232,.12);color:#1a73e8}
+.post-body{padding:48px 0}.post-body h1{font-size:1.75rem;margin-bottom:12px}
+.post-body p{margin-bottom:16px}.post-body blockquote{border-left:3px solid var(--c-accent);padding-left:16px;margin:24px 0;color:var(--c-text-light);font-style:italic}
+.post-body pre{background:var(--c-border);padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0;font-size:.9rem}
+.post-body code{font-family:"SF Mono",Fira Code,monospace}
+.back-link{display:inline-block;margin-top:32px;color:var(--c-accent);text-decoration:none;font-size:.9rem}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center;margin-top:48px}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/about.html">关于</a></nav>
+</div></header>
+<main class="container"><article class="post-body">
+<div class="post-meta"><time>2026-07-15</time><span class="tag">技术</span></div>
+<h1>你好，世界</h1>
+<p>每个程序员的博客都从 Hello World 开始。</p>
+<p>我搭过很多系统——dev-env 平台、AI Agent 工作流、NAS 自托管全家桶——但一直没搭自己的博客。原因很简单：总觉得应该先把事情做出来再写，结果事情永远做不完，文章永远没写。</p>
+<p>所以这次反过来：先写第一篇，哪怕没什么实质内容。</p>
+<h2>为什么要写博客？</h2>
+<p>不是为了教别人，而是为了理解自己。</p>
+<p>最近意识到一个问题：我花了大量时间搭建工具链，成就感来自"看着 AI 去做"，但真正"哦原来是这样"的理解时刻，已经很久没有过了。写博客是我对抗这种趋势的方式——迫使自己慢下来，把做过的事情讲清楚，看看自己到底理解了多少。</p>
+<blockquote>教是最好的学。写下来是最好的思考。</blockquote>
+<h2>这个博客的技术栈</h2>
+<p>纯 HTML+CSS，零框架。部署在阿里云 ECS 上，Caddy 做反代和 HTTPS。没有数据库，没有 CMS，没有评论系统。</p>
+<pre><code># 整个博客的体积
+index.html  ~4KB
+style.css   ~3KB (内联)
+about.html  ~2KB
+
+# 总计不到 10KB
+# 比 Google 首页还小</code></pre>
+<p>够用就好。</p>
+<h2>接下来</h2>
+<p>会慢慢写一些技术实践文章和随笔。不追求更新频率，有想法了就写。</p>
+<p>感谢来访。</p>
+<a href="/" class="back-link">← 返回首页</a>
+</article></main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域</p><p class="footer-sub">xiweihai.site</p>
+</div></footer>
+</body></html>

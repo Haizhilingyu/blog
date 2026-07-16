@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+<title>海之领域</title>
+<link>https://xiweihai.site</link>
+<description>建平儿的技术笔记与随笔</description>
+<language>zh-CN</language>
+<lastBuildDate>Thu, 16 Jul 2026 08:01:03 +0800</lastBuildDate>
+<item>
+<title>你好，世界</title>
+<link>https://xiweihai.site/posts/hello-world.html</link>
+<description>每个程序员的博客都从 Hello World 开始。这是我的第一篇，聊聊为什么要写博客——不是为了教别人，而是为了理解自己。</description>
+<pubDate>Wed, 15 Jul 2026 00:00:00 +0800</pubDate>
+</item>
+<item>
+<title>用 AI Agent 搭建自动化开发流水线</title>
+<link>https://xiweihai.site/posts/ai-agent-pipeline.html</link>
+<description>从 Hermes Agent 到 dev-env 平台，半年实践总结：怎么让 AI 真正帮你干活，而不是帮你制造更多工作量。</description>
+<pubDate>Tue, 14 Jul 2026 00:00:00 +0800</pubDate>
+</item>
+<item>
+<title>技术建设与理解深度的矛盾</title>
+<link>https://xiweihai.site/posts/tech-vs-understanding.html</link>
+<description>花了半年搭了一套自动化工具链，突然发现：成就感来自看着 AI 去做，而不是真正理解。这篇文章是我的自我反思。</description>
+<pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate>
+</item>
+<item>
+<title>NAS 自托管完全指南</title>
+<link>https://xiweihai.site/posts/nas-self-hosting.html</link>
+<description>绿联 DH4300 PLUS 上跑 Docker、PostgreSQL、Redis、Gitea、Portainer，一台 NAS 搞定家庭基础设施。</description>
+<pubDate>Wed, 01 Jul 2026 00:00:00 +0800</pubDate>
+</item>
+<item>
+<title>学中医的第七天</title>
+<link>https://xiweihai.site/posts/learning-tcm.html</link>
+<description>用 LLM Wiki 搭了个中医知识库，学到第七天才意识到：古人的思维方式和写代码完全不同。</description>
+<pubDate>Sat, 20 Jun 2026 00:00:00 +0800</pubDate>
+</item>
+</channel>
+</rss>

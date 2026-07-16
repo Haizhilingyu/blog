@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="海之领域 — 建平儿的技术笔记与随笔">
+<title>海之领域 · xiweihai.site</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0;--c-tag-tech:#1a73e8;--c-tag-life:#d4641e}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg);z-index:100}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none;letter-spacing:.05em}
+.nav{display:flex;gap:24px}
+.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav a:hover{color:var(--c-accent)}
+.hero{padding:64px 0 48px;text-align:center}
+.hero h1{font-size:1.75rem;font-weight:700;line-height:1.5;margin-bottom:12px}
+.hero-sub{color:var(--c-text-light);font-size:1rem}
+.posts{padding-bottom:48px}
+.post-card{padding:28px 0;border-bottom:1px solid var(--c-border)}
+.post-card:last-child{border-bottom:none}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.8rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--c-border);color:var(--c-text-light)}
+.tag.tech{background:rgba(26,115,232,.12);color:var(--c-tag-tech)}
+.tag.life{background:rgba(212,100,30,.12);color:var(--c-tag-life)}
+.post-card h2{font-size:1.25rem;line-height:1.4;margin-bottom:8px}
+.post-card h2 a{color:var(--c-text);text-decoration:none;transition:color .2s}
+.post-card h2 a:hover{color:var(--c-accent)}
+.post-card p{color:var(--c-text-light);font-size:.95rem;line-height:1.7}
+.pagination{display:flex;justify-content:center;gap:8px;padding:32px 0}
+.pagination a,.pagination span{display:inline-block;min-width:36px;height:36px;line-height:36px;text-align:center;border-radius:12px;text-decoration:none;font-size:.9rem;color:var(--c-text-light)}
+.pagination .current{background:var(--c-accent);color:#fff}
+.pagination a:hover{background:var(--c-border)}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}
+.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+.site-footer a{color:var(--c-accent);text-decoration:none}
+@media(max-width:640px){.hero{padding:40px 0 32px}.hero h1{font-size:1.4rem}.post-card{padding:20px 0}.post-card h2{font-size:1.1rem}.nav{gap:16px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/about.html">关于</a><a href="/feed.xml">RSS</a></nav>
+</div></header>
+<main class="container">
+<section class="hero">
+<h1>在代码与生活之间，<br>寻找值得记录的瞬间。</h1>
+<p class="hero-sub">建平儿的技术笔记与随笔</p>
+</section>
+<section class="posts">
+<article class="post-card"><div class="post-meta"><time>2026-07-15</time><span class="tag tech">技术</span></div><h2><a href="/posts/hello-world.html">你好，世界</a></h2><p>每个程序员的博客都从 Hello World 开始。这是我的第一篇，聊聊为什么要写博客——不是为了教别人，而是为了理解自己。</p></article>
+<article class="post-card"><div class="post-meta"><time>2026-07-14</time><span class="tag tech">技术</span></div><h2><a href="/posts/ai-agent-pipeline.html">用 AI Agent 搭建自动化开发流水线</a></h2><p>从 Hermes Agent 到 dev-env 平台，半年实践总结：怎么让 AI 真正帮你干活，而不是帮你制造更多工作量。</p></article>
+<article class="post-card"><div class="post-meta"><time>2026-07-10</time><span class="tag life">随笔</span></div><h2><a href="/posts/tech-vs-understanding.html">技术建设与理解深度的矛盾</a></h2><p>花了半年搭了一套自动化工具链，突然发现：成就感来自看着 AI 去做，而不是真正理解。这篇文章是我的自我反思。</p></article>
+<article class="post-card"><div class="post-meta"><time>2026-07-01</time><span class="tag tech">技术</span></div><h2><a href="/posts/nas-self-hosting.html">NAS 自托管完全指南</a></h2><p>绿联 DH4300 PLUS 上跑 Docker、PostgreSQL、Redis、Gitea、Portainer，一台 NAS 搞定家庭基础设施。</p></article>
+<article class="post-card"><div class="post-meta"><time>2026-06-20</time><span class="tag life">随笔</span></div><h2><a href="/posts/learning-tcm.html">学中医的第七天</a></h2><p>用 LLM Wiki 搭了个中医知识库，学到第七天才意识到：古人的思维方式和写代码完全不同。</p></article>
+</section>
+
+</main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域 · 由 <a href="https://hermes-agent.nousresearch.com">Hermes Agent</a> 驱动</p>
+<p class="footer-sub">xiweihai.site</p>
+</div></footer>
+</body></html>

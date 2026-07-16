@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAS 自托管完全指南 · 海之领域</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg);z-index:100}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none;letter-spacing:.05em}
+.nav{display:flex;gap:24px}
+.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav a:hover{color:var(--c-accent)}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.85rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--c-border);color:var(--c-text-light)}
+.tag.tech{background:rgba(26,115,232,.12);color:#1a73e8}
+.tag.life{background:rgba(212,100,30,.12);color:#d4641e}
+.post-body{padding:48px 0}
+.post-body h1{font-size:1.75rem;margin-bottom:8px;line-height:1.4}
+.post-body h2{font-size:1.3rem;margin:36px 0 12px;line-height:1.4}
+.post-body h3{font-size:1.1rem;margin:28px 0 10px}
+.post-body p{margin-bottom:16px;color:var(--c-text-light)}
+.post-body ul,.post-body ol{padding-left:20px;margin-bottom:16px}
+.post-body li{margin-bottom:8px;color:var(--c-text-light)}
+.post-body blockquote{border-left:3px solid var(--c-accent);padding-left:16px;margin:24px 0;color:var(--c-text-light);font-style:italic}
+.post-body pre{background:var(--c-border);padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0;font-size:.9rem;line-height:1.5}
+.post-body code{font-family:"SF Mono","Fira Code",monospace;font-size:.9rem}
+.post-body strong{color:var(--c-text);font-weight:600}
+.post-body table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+.post-body th,.post-body td{border:1px solid var(--c-border);padding:8px 12px;text-align:left;color:var(--c-text-light)}
+.post-body th{background:var(--c-border);font-weight:600;color:var(--c-text)}
+.back-link{display:inline-block;margin-top:40px;color:var(--c-accent);text-decoration:none;font-size:.9rem}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center;margin-top:48px}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}
+.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/about.html">关于</a></nav>
+</div></header>
+<main class="container"><article class="post-body">
+
+<div class="post-meta">
+<span class="tag tech">技术</span>
+<time>2026-07-01</time>
+<span>· 约 10 分钟阅读</span>
+</div>
+
+<h1>NAS 自托管完全指南</h1>
+
+<p>折腾 NAS 自托管大半年了，踩了不少坑。这篇把硬件选型、服务部署、网络配置到日常运维的经验都记录下来，给同样想自建家庭服务器的朋友一个参考。不是教程，是踩坑笔记。</p>
+
+<h2>硬件</h2>
+
+<p>机器是<strong>绿联 DH4300 PLUS</strong>，aarch64（ARM64）架构，8GB 内存。选它主要是性价比——千元出头，四个盘位，ARM 架构功耗低，跑 Docker 绰绰有余。如果你要跑 x86 才有的镜像或者虚拟机，那得换 N100 小主机之类的方案；但纯做容器化服务，ARM 完全够用。</p>
+
+<table>
+<tr><th>项目</th><th>配置</th></tr>
+<tr><td>型号</td><td>绿联 DH4300 PLUS</td></tr>
+<tr><td>架构</td><td>aarch64 (ARM64)</td></tr>
+<tr><td>内存</td><td>8GB DDR4</td></tr>
+<tr><td>盘位</td><td>4 × 3.5" HDD</td></tr>
+</table>
+
+<h2>SSH 连接</h2>
+
+<p>SSH 地址 <code>home@192.168.1.2</code>，建议第一件事就是把自己加入 docker 用户组，这样后面所有 docker 命令都不用加 <code>sudo</code>：</p>
+
+<pre><code>sudo usermod -aG docker home</code></pre>
+
+<p>加完<strong>重新登录</strong>才会生效（不是重启，是退出 SSH 再连一次）。</p>
+
+<h2>跑的服务一览</h2>
+
+<ul>
+<li><strong>Docker</strong>：一切的基础</li>
+<li><strong>PostgreSQL</strong>（端口 5532，避让宿主自带实例）</li>
+<li><strong>Redis</strong>（端口 6380，同理避让）</li>
+<li><strong>Gitea</strong>：私有 Git 仓库</li>
+<li><strong>Portainer</strong>：Docker 可视化管理</li>
+<li><strong>mem0</strong>：AI 记忆层服务</li>
+</ul>
+
+<h2>踩坑实录</h2>
+
+<h3>坑一：NAS 上没有 git</h3>
+
+<p>绿联的系统是个精简 Linux，默认没装 git。想传代码或配置文件上去，最靠谱的方式是 <strong>SFTP</strong>而不是 SCP——SFTP 支持断点续传，大文件比 SCP 稳得多。Mac 上直接 Finder → 前往 → 连接服务器，输入 <code>sftp://home@192.168.1.2</code> 就能图形化管理文件。</p>
+
+<h3>坑二：内联 SSH 频繁超时</h3>
+
+<p>如果你的脚本里有大量内联 SSH 命令（一条一条 <code>ssh home@... "cmd"</code> 这么跑），会发现经常 60-150 秒才响应，甚至直接超时。原因是每次 SSH 都要重新建立连接、握手、认证，NAS 的 SSH 守护进程扛不住高频请求。</p>
+
+<p>解决方案：<strong>把脚本写到本地，一次性传过去执行</strong>。</p>
+
+<pre><code># 不要这样（每条命令一个 SSH 连接）：
+ssh home@192.168.1.2 "docker ps"
+ssh home@192.168.1.2 "docker logs xxx"
+
+# 要这样（一次连接，批量执行）：
+cat deploy.sh | ssh home@192.168.1.2 "sh -s"</code></pre>
+
+<p><code>sh -s</code> 表示从标准输入读取脚本。这样只建立一次连接，所有命令在远端连续执行，速度和稳定性都好得多。</p>
+
+<h3>坑三：SSH 密码交互</h3>
+
+<p>Mac 上没有 <code>sshpass</code>（brew 安装也被移出了主仓库），自动输密码得用 <code>expect</code>：</p>
+
+<pre><code>#!/usr/bin/expect -f
+set timeout 30
+spawn ssh home@192.168.1.2 "docker ps"
+expect "password:"
+send "nas.home.@X94\r"
+interact</code></pre>
+
+<p>更推荐的做法还是配 SSH 密钥免密登录，<code>ssh-copy-id home@192.168.1.2</code> 一步到位，之后再也不用输密码。</p>
+
+<h3>坑四：Docker bind mount 不会热加载</h3>
+
+<p>这是新手最容易栽的坑。<strong>Docker 的 bind mount（挂载宿主目录）是只读快照式的</strong>——你在宿主上改了挂载目录里的文件，容器内不会自动看到变化，必须重启容器：</p>
+
+<pre><code># 改完配置文件后：
+docker restart &lt;container_name&gt;
+
+# 或者如果用的是 docker-compose：
+docker-compose restart &lt;service_name&gt;</code></pre>
+
+<p>volume（命名卷）和 bind mount 行为不同，但大部分自托管场景用的都是 bind mount（因为要直接编辑宿主上的文件）。记住一条：<strong>改了挂载内容，就 restart</strong>。</p>
+
+<h3>坑五：端口避让</h3>
+
+<p>NAS 系统自带的服务会占用常见端口。比如 PostgreSQL 默认 5432、Redis 默认 6379，如果你直接用默认端口起 Docker 容器，会跟宿主上的实例冲突。我的做法是统一<strong>偏移 +500</strong>：</p>
+
+<ul>
+<li>PostgreSQL: <code>5532</code></li>
+<li>Redis: <code>6380</code></li>
+</ul>
+
+<p>这样一眼就能看出是什么服务，也不会跟任何默认端口撞车。</p>
+
+<h2>Portainer：比命令行更靠谱</h2>
+
+<p>说实话，在 NAS 这种 ARM 架构 + 精简系统上，命令行操作 docker-compose 偶尔会遇到编码问题、换行符问题、终端宽度截断问题。装了 <strong>Portainer</strong> 之后，大部分日常操作（起停容器、看日志、进 shell、更新镜像）都在网页上完成，体验明显比命令行顺畅。</p>
+
+<p>部署很简单：</p>
+
+<pre><code>docker run -d -p 9443:9443 \
+  --name portainer \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainer/portainer-ce:latest</code></pre>
+
+<h2>网络：镜像拉取失败</h2>
+
+<p>NAS 在国内网络环境下拉 Docker Hub 镜像经常会失败或极慢。两个办法：</p>
+
+<ol>
+<li><strong>配置 Docker 代理</strong>：在 <code>/etc/docker/daemon.json</code> 里加镜像加速地址（阿里云、DaoCloud 等都有免费加速服务）</li>
+<li><strong>本地拉取再传</strong>：在 Mac 上 <code>docker pull</code> + <code>docker save</code> 导出 tar，SFTP 传到 NAS，再 <code>docker load</code></li>
+</ol>
+
+<p>方法二虽然土但百分百可靠，适合部署 ARM 架构专用镜像时使用。</p>
+
+<h2>写在最后</h2>
+
+<p>NAS 自托管的乐趣在于：你拥有对数据的完全控制。Gitea 里存的是你自己的代码，PostgreSQL 里跑的是你自己的数据库，没有哪天服务商会突然关停。代价是你得自己处理一切运维问题——但这些问题大多是有解的，记下来下次就不会再栽。</p>
+
+<p>这篇博客本身就是从 NAS 上的 Gitea 仓库 commit、push 到远程服务器部署的。工具链跑顺之后，有一种踏实感。</p>
+
+<a href="/" class="back-link">← 返回文章列表</a>
+
+</article></main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域</p><p class="footer-sub">xiweihai.site</p>
+</div></footer>
+</body></html>
