@@ -116,7 +116,7 @@ def build_page(posts, page_num, total_pages):
 <body>
 <header class="site-header"><div class="container">
 <a href="/" class="logo">{SITE_NAME}</a>
-<nav class="nav"><a href="/">文章</a><a href="/about.html">关于</a><a href="/feed.xml">RSS</a></nav>
+<nav class="nav"><a href="/">文章</a><a href="/ai-news.html">资讯</a><a href="/about.html">关于</a><a href="/feed.xml">RSS</a></nav>
 </div></header>
 <main class="container">
 <section class="hero">
