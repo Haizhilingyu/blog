@@ -137,3 +137,56 @@ curl -s https://xiweihai.site/feed.xml | grep "文章标题"
 | `title` | string | 文章标题（显示在首页卡片和 `<title>`） |
 | `file` | string | `posts/` 目录下的文件名 |
 | `summary` | string | 首页卡片摘要，一两句话 |
+
+
+## AI 资讯模块
+
+资讯页面独立于博客文章，由 VPS Hermes 每天自动采集生成。
+
+### 文件说明
+
+| 文件 | 作用 |
+|------|------|
+| `news_generator.py` | 扫描 `ai-news/*.json`，生成资讯首页（分页）+ 每日详情页 |
+| `save_news.py` | 桥接脚本：接收采集 JSON → 保存快照 → 调用生成器 |
+| `ai-news/YYYY-MM-DD.json` | 每日资讯数据快照（唯一数据源） |
+| `ai-news/YYYY-MM-DD.html` | 每日资讯详情页（自动生成） |
+| `ai-news.html` | 资讯首页，最新 10 天（自动生成） |
+
+### 数据采集流程
+
+```
+VPS cron job (每天 23:00 UTC)
+  ↓ daily_ai_search.py 搜索 X 推文
+  ↓ Hermes 翻译英文推文为中文
+  ↓ 保存 ai-news/YYYY-MM-DD.json
+  ↓ news_generator.py 生成 HTML
+  ↓ 资讯首页自动更新
+```
+
+### JSON 快照格式
+
+```json
+{
+  "total_tweets": 15,
+  "sections": [
+    {
+      "name": "全球AI热门",
+      "tweets": [
+        {
+          "author": "Sam Altman",
+          "username": "sama",
+          "text": "原文内容",
+          "cn_summary": "中文翻译摘要",
+          "link": "https://x.com/...",
+          "metrics_str": "❤️ 12000 | 🔁 3000"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 资讯不加入 RSS
+
+资讯页面独立于博客文章的 RSS feed，`feed.xml` 只包含手写文章。
