@@ -45,6 +45,13 @@
 
 脚本自动处理首页分页、RSS 更新。
 
+## Agent 写作指南
+
+本仓库包含 `AGENTS.md`，Hermes Agent 克隆后会自动加载。
+包含完整的文章写作规范、HTML 模板和部署流程，确保任何 Agent 写出的文章风格一致。
+
+文章模板：`templates/article-template.html`
+
 ## License
 
 MIT
