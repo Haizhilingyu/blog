@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修了一个隐藏的代理问题 — pi daemon 启动排查记 · 海之领域</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg);z-index:100}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none;letter-spacing:.05em}
+.nav{display:flex;gap:24px}
+.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav a:hover{color:var(--c-accent)}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.85rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--c-border);color:var(--c-text-light)}
+.tag.tech{background:rgba(26,115,232,.12);color:#1a73e8}
+.post-body{padding:48px 0}
+.post-body h1{font-size:1.75rem;margin-bottom:8px;line-height:1.4}
+.post-body h2{font-size:1.3rem;margin:36px 0 12px;line-height:1.4}
+.post-body h3{font-size:1.1rem;margin:28px 0 10px}
+.post-body p{margin-bottom:16px;color:var(--c-text-light)}
+.post-body ul,.post-body ol{padding-left:20px;margin-bottom:16px}
+.post-body li{margin-bottom:8px;color:var(--c-text-light)}
+.post-body blockquote{border-left:3px solid var(--c-accent);padding-left:16px;margin:24px 0;color:var(--c-text-light);font-style:italic}
+.post-body pre{background:var(--c-border);padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0;font-size:.9rem;line-height:1.5}
+.post-body code{font-family:"SF Mono","Fira Code",monospace;font-size:.9rem}
+.post-body strong{color:var(--c-text);font-weight:600}
+.post-body table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+.post-body th,.post-body td{border:1px solid var(--c-border);padding:8px 12px;text-align:left;color:var(--c-text-light)}
+.post-body th{background:var(--c-border);font-weight:600;color:var(--c-text)}
+.back-link{display:inline-block;margin-top:40px;color:var(--c-accent);text-decoration:none;font-size:.9rem}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center;margin-top:48px}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}
+.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/ai-news.html">资讯</a><a href="/about.html">关于</a></nav>
+</div></header>
+<main class="container"><article class="post-body">
+
+<div class="post-meta"><time>2026-07-19</time><span class="tag tech">技术</span></div>
+<h1>修了一个隐藏的代理问题 — pi daemon 启动排查记</h1>
+
+<p>昨晚家里断电，NAS 和 Mac 都关了。今天回来发现 pi（飞书机器人 daemon）没自动启动。本来以为简单重启一下就行，结果花了半小时才找到真正的问题——一个已经关闭的 WiFi 代理留下的幽灵。</p>
+
+<h2>症状</h2>
+
+<p>pi 启动后飞书连接显示「已连接」，但几秒后进程就退出了。重新启动，同样的情况反复出现。</p>
+
+<h2>第一层：以为是 stdin 问题</h2>
+
+<p>pi 用的是 RPC 模式，需要 stdin 保持打开。进程退出最先想到的就是 stdin EOF。加上 <code>tail -f /dev/null</code> 喂 stdin——这是之前验证过的方案：</p>
+
+<pre><code>tail -f /dev/null | pi --mode rpc \
+  --no-extensions --no-skills --no-prompt-templates \
+  -e /path/to/feishu/index.ts</code></pre>
+
+<p>但这次没用，进程还是退。</p>
+
+<h2>第二层：日志里的 ECONNREFUSED</h2>
+
+<p>翻 <code>daemon.log</code>，看到一行关键报错：</p>
+
+<pre><code>Error: connect ECONNREFUSED 192.168.1.2:20172
+  at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+
+[feishu] daemon autoStart failed:
+  Cannot destructure property 'tenant_access_token'
+  of '(intermediate value)' as it is undefined.</code></pre>
+
+<p><strong>192.168.1.2:20172 是 NAS 上的 HTTP 代理。</strong> pi 的飞书插件请求飞书 API 获取 <code>tenant_access_token</code>，但请求被代理拦截——而代理已经死了。</p>
+
+<p>问题是：我之前已经在 Mac 的 WiFi 设置里把代理关了啊？</p>
+
+<h2>第三层：系统代理关了，环境变量还在</h2>
+
+<p>这是最坑的地方。macOS 的 WiFi 代理设置关掉后，<strong>当前 shell 会话里的 <code>http_proxy</code> / <code>https_proxy</code> 环境变量并不会自动清除</strong>。这些变量是在代理开启时被注入到进程环境中的，只要终端/session 不重启，它们就一直存在。</p>
+
+<p>pi 作为子进程继承了这些环境变量，所有 HTTP 请求都先走 <code>192.168.1.2:20172</code>——一个已经不存在的代理。</p>
+
+<h2>修复</h2>
+
+<p>启动前手动 unset 所有代理变量：</p>
+
+<pre><code>export PATH="/Users/hai/.nvm/versions/node/v22.22.2/bin:$PATH"
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
+
+tail -f /dev/null | pi --mode rpc \
+  --no-extensions --no-skills --no-prompt-templates \
+  --no-themes --no-context-files --no-builtin-tools \
+  -e /Users/hai/.pi/agent/git/github.com/AX1202/pi-feishu-lark/.pi/extensions/feishu/index.ts</code></pre>
+
+<p>这次飞书连接成功，进程稳定运行不再退出。</p>
+
+<h2>两个坑，一个比一个隐蔽</h2>
+
+<table>
+<tr><th>问题</th><th>原因</th><th>表现</th></tr>
+<tr><td>代理幽灵</td><td>WiFi 代理关闭后 <code>http_proxy</code> 环境变量未清除</td><td>ECONNREFUSED，飞书 token 获取失败</td></tr>
+<tr><td>stdin EOF</td><td>RPC 模式读 stdin，EOF 触发退出</td><td>飞书已连接但进程秒退</td></tr>
+</table>
+
+<p>两个问题叠加在一起，第一个导致飞书连不上，第二个导致即使连上了也保不住。单独排查任何一个都找不到完整答案。</p>
+
+<h2>教训</h2>
+
+<ol>
+<li><strong>关闭代理 ≠ 清除环境变量。</strong>macOS 系统代理设置变更不会同步到已运行的 shell session。以后关代理后，要么重开终端，要么手动 <code>unset</code>。</li>
+
+<li><strong>看日志比猜原因快。</strong>第一反应是 stdin 问题（因为是已知的老问题），差点忽略了日志里的 <code>ECONNREFUSED</code>。如果一开始就 <code>tail daemon.log</code>，5 分钟就能定位。</li>
+
+<li><strong>把排查过程写成 Skill。</strong>这次的问题（代理残留 + stdin EOF）以后断电重启还会遇到。直接写成了一个 Hermes Skill（<code>pi-feishu-daemon</code>），下次同样的情况，Agent 加载技能就能自动按正确步骤启动，不用再重新排查。</li>
+</ol>
+
+<blockquote>每一次断电都是一次灾难恢复演练。问题是，你不想每次都从头排查。</blockquote>
+
+<h2>附：pi feishu daemon 排查速查</h2>
+
+<pre><code># 1. 检查 pi 是否在运行
+ps aux | grep "[e]arendil"
+
+# 2. 看飞书连接状态
+tail -5 ~/.pi/agent/feishu/daemon.log
+
+# 3. 看有没有代理残留
+env | grep -i proxy
+
+# 4. 启动（unset 代理 + tail stdin）
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
+tail -f /dev/null | pi --mode rpc ...</code></pre>
+
+<a href="/" class="back-link">← 返回首页</a>
+</article></main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域</p><p class="footer-sub">xiweihai.site</p>
+</div></footer>
+</body></html>
