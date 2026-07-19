@@ -1,4 +1,5 @@
 [
+  {"date": "2026-07-19", "tag": "tech", "title": "修了一个隐藏的代理问题 — pi daemon 启动排查记", "file": "fix-proxy-pi-daemon.html", "summary": "断电重启后 pi 飞书机器人启动失败，排查发现是已关闭的 WiFi 代理残留的环境变量在捣鬼。两个隐蔽问题叠加的排查过程。"},
   {"date": "2026-07-15", "tag": "tech", "title": "你好，世界", "file": "hello-world.html", "summary": "每个程序员的博客都从 Hello World 开始。这是我的第一篇，聊聊为什么要写博客——不是为了教别人，而是为了理解自己。"},
   {"date": "2026-07-14", "tag": "tech", "title": "用 AI Agent 搭建自动化开发流水线", "file": "ai-agent-pipeline.html", "summary": "从 Hermes Agent 到 dev-env 平台，半年实践总结：怎么让 AI 真正帮你干活，而不是帮你制造更多工作量。"},
   {"date": "2026-07-10", "tag": "life", "title": "技术建设与理解深度的矛盾", "file": "tech-vs-understanding.html", "summary": "花了半年搭了一套自动化工具链，突然发现：成就感来自看着 AI 去做，而不是真正理解。这篇文章是我的自我反思。"},
