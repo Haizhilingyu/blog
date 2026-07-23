@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>火山引擎 Agent Plan 用量实测：49.9 元首月到底能用多久 · 海之领域</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--c-bg:#fafaf7;--c-text:#2c2c2c;--c-text-light:#6a6a6a;--c-accent:#2d6a4f;--c-border:#e8e6e0}
+@media(prefers-color-scheme:dark){:root{--c-bg:#1a1a18;--c-text:#e0ddd8;--c-text-light:#9a9a9a;--c-accent:#52b788;--c-border:#333330}}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--c-bg);color:var(--c-text);line-height:1.8;-webkit-font-smoothing:antialiased}
+.container{max-width:680px;margin:0 auto;padding:0 20px}
+.site-header{padding:24px 0;border-bottom:1px solid var(--c-border);position:sticky;top:0;background:var(--c-bg);z-index:100}
+.site-header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;color:var(--c-text);text-decoration:none;letter-spacing:.05em}
+.nav{display:flex;gap:24px}
+.nav a{color:var(--c-text-light);text-decoration:none;font-size:.9rem;transition:color .2s}
+.nav a:hover{color:var(--c-accent)}
+.post-meta{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:.85rem;color:var(--c-text-light)}
+.tag{padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--c-border);color:var(--c-text-light)}
+.tag.tech{background:rgba(26,115,232,.12);color:#1a73e8}
+.post-body{padding:48px 0}
+.post-body h1{font-size:1.75rem;margin-bottom:8px;line-height:1.4}
+.post-body h2{font-size:1.3rem;margin:36px 0 12px;line-height:1.4}
+.post-body h3{font-size:1.1rem;margin:28px 0 10px}
+.post-body p{margin-bottom:16px;color:var(--c-text-light)}
+.post-body ul,.post-body ol{padding-left:20px;margin-bottom:16px}
+.post-body li{margin-bottom:8px;color:var(--c-text-light)}
+.post-body blockquote{border-left:3px solid var(--c-accent);padding-left:16px;margin:24px 0;color:var(--c-text-light);font-style:italic}
+.post-body pre{background:var(--c-border);padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0;font-size:.9rem;line-height:1.5}
+.post-body code{font-family:"SF Mono","Fira Code",monospace;font-size:.9rem}
+.post-body strong{color:var(--c-text);font-weight:600}
+.post-body table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+.post-body th,.post-body td{border:1px solid var(--c-border);padding:8px 12px;text-align:left;color:var(--c-text-light)}
+.post-body th{background:var(--c-border);font-weight:600;color:var(--c-text)}
+.back-link{display:inline-block;margin-top:40px;color:var(--c-accent);text-decoration:none;font-size:.9rem}
+.site-footer{padding:32px 0;border-top:1px solid var(--c-border);text-align:center;margin-top:48px}
+.site-footer p{font-size:.85rem;color:var(--c-text-light)}
+.footer-sub{margin-top:4px;font-size:.8rem;opacity:.6}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container">
+<a href="/" class="logo">海之领域</a>
+<nav class="nav"><a href="/">文章</a><a href="/ai-news.html">资讯</a><a href="/about.html">关于</a></nav>
+</div></header>
+<main class="container"><article class="post-body">
+
+<div class="post-meta"><time>2026-07-21</time><span class="tag tech">技术</span></div>
+<h1>火山引擎 Agent Plan 用量实测：49.9 元首月到底能用多久</h1>
+
+<p>上周从智谱 ZAI 迁到了火山引擎 ARK Agent Plan，首月 49.9 元，聚合了豆包、Kimi、GLM、DeepSeek、MiniMax 一堆模型，看着很划算。用了一周，说下真实感受。</p>
+
+<h2>先说结论</h2>
+
+<p><strong>用量消耗比智谱 Coding 快太多，不打算续订了。</strong></p>
+
+<p>同样是 Agent 场景的密集调用（Hermes 主对话 + 标题生成 + 上下文压缩 + 视觉分析 + 网页摘要），智谱 Coding PRO 套餐一个月用下来还有余量，火山引擎 Agent Plan 不到一周就见底了。</p>
+
+<h2>用量对比</h2>
+
+<table>
+<tr><th></th><th>智谱 Coding PRO</th><th>火山引擎 Agent Plan (首月 49.9)</th></tr>
+<tr><td>价格</td><td>年付套餐</td><td>首月 49.9 元</td></tr>
+<tr><td>使用场景</td><td>Hermes 全栈 + coding agent</td><td>同上（迁移后未改使用习惯）</td></tr>
+<tr><td>用量消耗速度</td><td>正常，月底有余量</td><td>不到一周见底</td></tr>
+<tr><td>模型丰富度</td><td>只有 GLM 系列</td><td>豆包 + Kimi + GLM + DeepSeek + MiniMax</td></tr>
+<tr><td>限速问题</td><td>有 QPM 限速</td><td>无限速，但额度消耗快</td></tr>
+</table>
+
+<p>使用习惯完全没变，就是正常的 Agent 对话 + 辅助调用，量一下子就没了。</p>
+
+<h2>为什么消耗这么快</h2>
+
+<p>Agent Plan 的模型列表里每个模型都有<strong>抵扣系数</strong>，不同模型系数不同。从手机端的模型选择页可以看到：</p>
+
+<ul>
+<li><strong>Doubao-Seed-Evolving</strong>：最新旗舰，1M 上下文，系数没标但肯定不低</li>
+<li><strong>Kimi-K3</strong>：尝鲜版，明确标注「抵扣系数高」</li>
+<li><strong>DeepSeek-V4-Pro</strong>：标注「模型抵扣系数较高，推荐用于复杂问题」</li>
+<li><strong>DeepSeek-V4-Flash</strong>：标注「超低抵扣系数」，相对省</li>
+</ul>
+
+<p>也就是说，49.9 元买的额度，实际能用多少 token 取决于你选哪个模型。用旗舰模型（Doubao-Seed-2.0-Pro、Kimi-K3）的话，系数高，额度消耗是标称的好几倍。</p>
+
+<p>而 Hermes 的主对话 + 辅助调用（压缩、标题生成、视觉分析）全部打到同一个 key 上，这些辅助调用加起来其实量不小。智谱那边可能对 Coding 套餐的辅助调用有更宽松的额度政策，火山引擎这边就是实打实地扣。</p>
+
+<h2>49.9 是真的便宜吗</h2>
+
+<p>表面上看，49.9 一个月能用十几个旗舰模型，好像很值。但如果实际可用量只有智谱 Coding 的五分之一甚至更少，那 <strong>单位 token 的成本反而更高</strong>。</p>
+
+<p>这就像自助餐——门票便宜，但你还没吃几口就被告知「高档菜品要额外收费，而且费率不一样」。</p>
+
+<h2>打算怎么办</h2>
+
+<p>火山引擎 Agent Plan 到期后不准备续了。接下来的方案：</p>
+
+<ol>
+<li><strong>Hermes 主模型切回 ZAI（智谱）</strong>——Coding PRO 套餐到 2027 年 5 月到期，量够用，虽然偶尔 QPM 限速但能接受</li>
+<li><strong>ECS 上的 omp</strong>——已配好 ARK Agent Plan 的 12 个模型，有额度的时候可以继续用，用完就切回 ZAI</li>
+<li><strong>按需使用</strong>——不再把所有调用都绑到一个 Plan 上，主用智谱，火山引擎作为补充</li>
+</ol>
+
+<h2>一点反思</h2>
+
+<p>选 API 服务的时候，最容易犯的错误就是<strong>只看价格和模型列表，不看实际可用量</strong>。49.9 元 + 12 个旗舰模型的组合太诱人了，以至于忽略了「抵扣系数」这个关键变量。</p>
+
+<p>另外，Agent 场景的消耗和普通聊天完全不一样。一次对话可能触发：主对话、标题生成、上下文压缩、视觉分析、网页摘要——五次 API 调用。如果每个调用都走高抵扣系数的旗舰模型，额度消耗速度是惊人的。</p>
+
+<blockquote>便宜的订阅制 API 就像健身房年卡——买的不是服务本身，而是「以为自己会用到」的幻觉。</blockquote>
+
+<a href="/" class="back-link">← 返回首页</a>
+</article></main>
+<footer class="site-footer"><div class="container">
+<p>© 2026 海之领域</p><p class="footer-sub">xiweihai.site · <a href="https://beian.miit.gov.cn" style="color:var(--c-text-light);text-decoration:none">蜀ICP备2022030677号</a></p>
+</div></footer>
+</body></html>
